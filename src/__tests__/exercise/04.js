@@ -4,11 +4,18 @@
 import * as React from 'react'
 import {render, screen} from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import faker from 'faker';
+import { build, fake } from '@jackfranklin/test-data-bot';
 import Login from '../../components/login'
 
+const loginFormBuilder = build({
+    fields: {
+        username: fake(f => f.internet.userName()),
+        password: fake(f => f.internet.password()),
+    },
+});
+
 test('submitting the form calls onSubmit with username and password', async () => {
-  const { username, password } = buildLoginForm({ password: 'abc' });
+  const { username, password } = loginFormBuilder();
   const handleSubmit = jest.fn();
 
   render(<Login onSubmit={handleSubmit} />);
@@ -23,22 +30,9 @@ test('submitting the form calls onSubmit with username and password', async () =
 
   expect(handleSubmit).toHaveBeenCalledWith({
       username,
-      password: 'abc',
+      password,
   });
 })
-
-function buildLoginForm(overrides) {
-    const {
-        username: usernameOverride,
-        password: passwordOverride,
-    } = overrides ?? {};
-
-    return {
-        username: usernameOverride || faker.internet.userName(),
-        password: passwordOverride || faker.internet.password(),
-    };
-}
-
 
 /*
 eslint
