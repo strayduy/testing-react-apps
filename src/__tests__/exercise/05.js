@@ -7,9 +7,9 @@ import {render, screen, waitForElementToBeRemoved} from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import {build, fake} from '@jackfranklin/test-data-bot'
 // 🐨 you'll need to import rest from 'msw' and setupServer from msw/node
-import {rest} from 'msw'
 import {setupServer} from 'msw/node'
 import Login from '../../components/login-submission'
+import {handlers} from '../../test/server-handlers';
 
 const buildLoginForm = build({
   fields: {
@@ -20,14 +20,7 @@ const buildLoginForm = build({
 
 // 🐨 get the server setup with an async function to handle the login POST request:
 // 💰 here's something to get you started
-const server = setupServer(
-  rest.post(
-    'https://auth-provider.example.com/api/login',
-    async (req, res, ctx) => {
-      return res(ctx.json({ username: req.body.username }));
-    },
-  )
-)
+const server = setupServer(...handlers)
 // you'll want to respond with an JSON object that has the username.
 // 📜 https://mswjs.io/
 
