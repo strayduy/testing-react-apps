@@ -7,7 +7,7 @@ import userEvent from '@testing-library/user-event'
 import {build, fake} from '@jackfranklin/test-data-bot'
 import {setupServer} from 'msw/node'
 import Login from '../../components/login-submission'
-import {handlers} from '../../test/server-handlers';
+import {handlers} from '../../test/server-handlers'
 
 const buildLoginForm = build({
   fields: {
@@ -30,7 +30,7 @@ test(`logging in displays the user's username`, async () => {
   await userEvent.click(screen.getByRole('button', {name: /submit/i}))
   await waitForElementToBeRemoved(screen.getByLabelText(/loading/i))
 
-  expect(screen.getByText(username)).toBeInTheDocument();
+  expect(screen.getByText(username)).toBeInTheDocument()
 })
 
 test(`omitting the username displays an error`, async () => {
@@ -41,7 +41,9 @@ test(`omitting the username displays an error`, async () => {
   await userEvent.click(screen.getByRole('button', {name: /submit/i}))
   await waitForElementToBeRemoved(screen.getByLabelText(/loading/i))
 
-  expect(screen.getByRole('alert')).toHaveTextContent(/username required/i);
+  expect(screen.getByRole('alert').textContent).toMatchInlineSnapshot(
+    `"username required"`,
+  )
 })
 
 test(`omitting the password displays an error`, async () => {
@@ -52,5 +54,7 @@ test(`omitting the password displays an error`, async () => {
   await userEvent.click(screen.getByRole('button', {name: /submit/i}))
   await waitForElementToBeRemoved(screen.getByLabelText(/loading/i))
 
-  expect(screen.getByRole('alert')).toHaveTextContent(/password required/i);
+  expect(screen.getByRole('alert').textContent).toMatchInlineSnapshot(
+    `"password required"`,
+  )
 })
