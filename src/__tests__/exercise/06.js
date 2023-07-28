@@ -9,8 +9,8 @@ import Location from '../../examples/location'
 beforeAll(() => {
   window.navigator.geolocation = {
     getCurrentPosition: jest.fn(),
-  };
-});
+  }
+})
 
 // 💰 I'm going to give you this handy utility function
 // it allows you to create a promise that you can resolve/reject on demand.
@@ -34,11 +34,11 @@ test('displays the users current location', async () => {
   // 🐨 create a fakePosition object that has an object called "coords" with latitude and longitude
   // 📜 https://developer.mozilla.org/en-US/docs/Web/API/GeolocationPosition
   const fakePosition = {
-    coords: { latitude: 11, longitude: 22 },
-  };
+    coords: {latitude: 11, longitude: 22},
+  }
 
   // 🐨 create a deferred promise here
-  const { promise, resolve } = deferred();
+  const {promise, resolve} = deferred()
 
   // 🐨 Now we need to mock the geolocation's getCurrentPosition function
   // To mock something you need to know its API and simulate that in your mock:
@@ -54,29 +54,29 @@ test('displays the users current location', async () => {
   // 🐨 you'll call the callback when the deferred promise resolves
   // 💰 promise.then(() => {/* call the callback with the fake position */})
   window.navigator.geolocation.getCurrentPosition.mockImplementation(
-    (success) => {
+    success => {
       promise.then(() => {
-        success(fakePosition);
+        success(fakePosition)
       })
-    }
-  );
+    },
+  )
 
   // 🐨 now that setup is done, render the Location component itself
-  render(<Location />);
+  render(<Location />)
 
   // 🐨 verify the loading spinner is showing up
   // 💰 tip: try running screen.debug() to know what the DOM looks like at this point.
-  expect(screen.getByLabelText(/loading/i)).toBeInTheDocument();
+  expect(screen.getByLabelText(/loading/i)).toBeInTheDocument()
 
   // 🐨 resolve the deferred promise
-  resolve();
+  resolve()
 
   // 🐨 wait for the promise to resolve
   // 💰 right around here, you'll probably notice you get an error log in the
   // test output. You can ignore that for now and just add this next line:
-  await act(async() => {
-    await promise;
-  });
+  await act(async () => {
+    await promise
+  })
 
   // If you'd like, learn about what this means and see if you can figure out
   // how to make the warning go away (tip, you'll need to use async act)
@@ -85,9 +85,31 @@ test('displays the users current location', async () => {
   // 🐨 verify the loading spinner is no longer in the document
   //    (💰 use queryByLabelText instead of getByLabelText)
   // 🐨 verify the latitude and longitude appear correctly
-  expect(screen.queryByLabelText(/loading/i)).not.toBeInTheDocument();
-  expect(screen.getByText("Latitude: 11")).toBeInTheDocument();
-  expect(screen.getByText("Longitude: 22")).toBeInTheDocument();
+  expect(screen.queryByLabelText(/loading/i)).not.toBeInTheDocument()
+  expect(screen.getByText('Latitude: 11')).toBeInTheDocument()
+  expect(screen.getByText('Longitude: 22')).toBeInTheDocument()
+})
+
+test('displays an error message if we cannot get the users current location', async () => {
+  const {promise, reject} = deferred()
+
+  window.navigator.geolocation.getCurrentPosition.mockImplementation(
+    (_, error) => {
+      promise.catch(() => {
+        error(new Error('test error'))
+      })
+    },
+  )
+
+  render(<Location />)
+  expect(screen.getByLabelText(/loading/i)).toBeInTheDocument()
+
+  await act(async () => {
+    reject()
+  })
+
+  expect(screen.queryByLabelText(/loading/i)).not.toBeInTheDocument()
+  expect(screen.getByRole('alert')).toHaveTextContent('test error')
 })
 
 /*
