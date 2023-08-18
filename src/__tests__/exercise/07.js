@@ -2,17 +2,9 @@
 // http://localhost:3000/easy-button
 
 import * as React from 'react'
-import {render as rtlRender, screen} from '@testing-library/react'
-import {ThemeProvider} from '../../components/theme'
+import {screen} from '@testing-library/react'
 import EasyButton from '../../components/easy-button'
-
-function render(ui, options) {
-  function Wrapper({ children }) {
-    return <ThemeProvider initialTheme={options.theme}>{children}</ThemeProvider>
-  }
-
-  return rtlRender(ui, {wrapper: Wrapper, ...options})
-}
+import {render} from '../../test/test-utils'
 
 test('renders with the light styles for the light theme', () => {
   render(<EasyButton>Easy</EasyButton>, {theme: 'light'})
